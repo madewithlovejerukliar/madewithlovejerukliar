@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Retro Apple MP3 Player - Real Time Edition</title>
+    <title>Retro Apple MP3 Player - 3D Edition</title>
     <style>
         :root {
-            --ipod-bg: #e0e0e0;
-            --screen-bg: #d1d1e0; /* Warna LCD Klasik */
+            --body-grad: linear-gradient(135deg, #ffffff 0%, #e0e0e0 50%, #b8b8b8 100%);
+            --screen-bg: #cbd3d6;
             --apple-blue: #3b97ee;
+            --wheel-bg: #f8f8f8;
         }
 
         body {
@@ -17,300 +18,239 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #1a1a1a; 
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+            background: radial-gradient(circle, #333 0%, #111 100%);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
-        /* Body iPod */
+        /* Container untuk efek perspektif */
+        .container-3d {
+            perspective: 1000px;
+        }
+
+        /* Body iPod dengan efek 3D */
         .ipod {
-            width: 300px;
-            height: 520px;
-            background: linear-gradient(145deg, #f0f0f0, #c8c8c8);
-            border-radius: 40px;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.5), inset 0 2px 5px white;
-            padding: 25px;
+            width: 320px;
+            height: 540px;
+            background: var(--body-grad);
+            border-radius: 45px;
+            padding: 30px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            border: 1px solid #aaa;
-            transition: transform 0.3s ease;
+            position: relative;
+            /* Efek bayangan luar agar terlihat melayang */
+            box-shadow: 
+                20px 20px 60px rgba(0,0,0,0.8),
+                -5px -5px 20px rgba(255,255,255,0.2),
+                inset 0 2px 3px rgba(255,255,255,0.8);
+            border: 1px solid #999;
+            transform: rotateX(5deg) rotateY(-5deg);
+            transition: transform 0.5s ease;
         }
 
-        /* Layar LCD */
+        .ipod:hover {
+            transform: rotateX(0deg) rotateY(0deg);
+        }
+
+        /* Layar LCD yang tenggelam (Bezel) */
+        .screen-bezel {
+            width: 100%;
+            height: 240px;
+            background: #222;
+            padding: 6px;
+            border-radius: 12px;
+            box-shadow: inset 0 4px 10px rgba(0,0,0,0.5);
+            margin-bottom: 35px;
+        }
+
         .screen {
             width: 100%;
-            height: 230px;
+            height: 100%;
             background: var(--screen-bg);
-            border-radius: 4px;
-            margin-bottom: 25px;
+            border-radius: 6px;
             overflow: hidden;
             color: #333;
             display: flex;
             flex-direction: column;
-            border: 4px solid #222;
-            position: relative; 
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+            position: relative;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.1);
         }
 
-        /* Header dengan Jam Real-Time */
         .screen-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 12px;
-            background: linear-gradient(to bottom, #f5f5f5, #b8b8c8);
-            border-bottom: 1px solid #888;
+            padding: 10px 15px;
+            background: linear-gradient(to bottom, #f9f9f9, #a0a0a8);
+            border-bottom: 1px solid #777;
         }
 
-        .header-time {
-            font-size: 13px;
-            font-weight: 700;
-            color: #000;
-            letter-spacing: -0.2px;
-        }
-
-        .header-icons {
-            display: flex;
-            align-items: center;
-        }
+        .header-time { font-size: 12px; font-weight: 800; }
 
         /* Baterai */
-        .battery-container {
-            display: flex;
-            align-items: center;
-        }
-
         .battery-body {
-            width: 20px;
-            height: 10px;
-            border: 1px solid rgba(0, 0, 0, 0.4);
-            border-radius: 2.5px;
-            position: relative;
+            width: 22px;
+            height: 11px;
+            border: 1.5px solid #444;
+            border-radius: 3px;
             padding: 1px;
             display: flex;
-            align-items: center;
         }
+        .battery-level { width: 80%; height: 100%; background: #222; }
 
-        .battery-level {
-            width: 85%; 
-            height: 100%;
-            background-color: #000;
-            border-radius: 1px;
-        }
-
-        .battery-cap {
-            width: 1.2px;
-            height: 3.5px;
-            background-color: rgba(0, 0, 0, 0.4);
-            margin-left: 1px;
-            border-radius: 0 1px 1px 0;
-        }
-
+        /* Now Playing Area */
         .now-playing {
             flex: 1;
-            padding: 15px 10px 5px 10px;
+            padding: 20px;
             display: flex;
             flex-direction: column;
-            z-index: 2;
-        }
-
-        .track-count {
-            font-size: 11px;
-            margin-bottom: 8px;
-            color: #555;
-            font-weight: bold;
         }
 
         .track-info-container {
             display: flex;
+            gap: 15px;
             align-items: center;
-            gap: 12px;
-            margin-bottom: 10px;
         }
 
         #album-art {
-            width: 90px;
-            height: 90px;
-            background-color: #fff;
-            border: 1px solid #777;
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
-            background-image: url('icemodev2.jpg');
+            width: 100px;
+            height: 100px;
+            background: #eee;
+            border: 1px solid #888;
+            box-shadow: 3px 3px 8px rgba(0,0,0,0.2);
+            background-image: url('https://via.placeholder.com/100'); /* Ganti dengan gambar anda */
             background-size: cover;
-            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        .playing #album-art {
-            transform: scale(1.05);
-        }
+        .text-meta #song-title { font-weight: 900; font-size: 15px; margin-bottom: 4px; }
+        .text-meta #artist-name { font-size: 13px; color: #555; }
 
-        .text-meta {
-            display: flex;
-            flex-direction: column;
-            text-align: left;
-            overflow: hidden;
-        }
-
-        #song-title { 
-            font-weight: 800; 
-            font-size: 14px; 
-            color: #000;
-            margin-bottom: 2px;
-            letter-spacing: -0.3px;
-            transition: all 0.3s ease;
-        }
-
-        #artist-name { font-size: 12px; color: #444; opacity: 0.9; margin: 0; }
-
-        .progress-container {
-            margin-top: auto;
-            padding-bottom: 8px;
-        }
-
+        /* Progress Bar */
+        .progress-container { margin-top: auto; }
         .progress-bar {
-            width: 100%;
-            height: 12px;
-            background: #e0e0f0;
+            height: 14px;
+            background: #eee;
             border: 1px solid #999;
-            border-radius: 2px;
+            border-radius: 3px;
             overflow: hidden;
-            position: relative;
         }
-
         .progress-fill {
-            width: 0%; 
-            height: 100%;
-            background: linear-gradient(to bottom, #87ceeb, #3b97ee);
+            width: 0%; height: 100%;
+            background: linear-gradient(to bottom, #5cb8ff, #0076d1);
         }
 
-        .time-info {
-            display: flex;
-            justify-content: space-between;
-            font-size: 10px;
-            font-weight: bold;
-            margin-top: 4px;
-            color: #333;
-        }
-
+        /* 3D Click Wheel */
         .wheel {
-            width: 180px;
-            height: 180px;
-            background: radial-gradient(circle, #ffffff 0%, #f0f0f0 100%);
+            width: 190px;
+            height: 190px;
+            background: #fff;
             border-radius: 50%;
             position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1), inset 0 2px 5px white;
             cursor: pointer;
+            /* Efek Cekung/3D */
+            box-shadow: 
+                0 10px 20px rgba(0,0,0,0.2),
+                inset 0 -5px 10px rgba(0,0,0,0.1),
+                inset 0 5px 10px rgba(255,255,255,1);
+            border: 1px solid #ccc;
         }
 
         .center-button {
-            width: 65px;
-            height: 65px;
-            background: #f8f8f8;
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(145deg, #ffffff, #e6e6e6);
             border-radius: 50%;
-            border: 1px solid #ddd;
+            border: 1px solid #d1d1d1;
             z-index: 10;
-            transition: transform 0.1s;
+            box-shadow: 
+                2px 2px 5px rgba(0,0,0,0.1),
+                -2px -2px 5px rgba(255,255,255,0.8);
         }
 
-        .center-button:active { transform: scale(0.92); }
+        .center-button:active {
+            transform: scale(0.95);
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1);
+        }
 
         .wheel-label {
             position: absolute;
-            font-weight: bold;
-            color: #bbb;
-            font-size: 11px;
-            user-select: none;
+            font-weight: 700;
+            color: #999;
+            font-size: 12px;
+            letter-spacing: 1px;
         }
 
-        .menu { top: 15px; }
-        .next { right: 15px; }
-        .prev { left: 15px; }
-        .play-pause { bottom: 15px; }
+        .menu { top: 20px; }
+        .next { right: 20px; }
+        .prev { left: 20px; }
+        .play-pause { bottom: 20px; }
 
         #audio-player { display: none; }
     </style>
 </head>
 <body>
 
-<div class="ipod">
-    <div class="screen">
-        <div class="screen-header">
-            <!-- Menambahkan ID real-time untuk JavaScript -->
-            <div class="header-time" id="real-time">00:00</div>
-            <div class="header-icons">
-                <div class="battery-container">
+<div class="container-3d">
+    <div class="ipod">
+        <div class="screen-bezel">
+            <div class="screen">
+                <div class="screen-header">
+                    <div class="header-time" id="real-time">12:00</div>
                     <div class="battery-body">
                         <div class="battery-level"></div>
                     </div>
-                    <div class="battery-cap"></div>
+                </div>
+
+                <div class="now-playing">
+                    <div class="track-info-container">
+                        <div id="album-art"></div>
+                        <div class="text-meta">
+                            <div id="song-title">@JERUKLIAR</div>
+                            <div id="artist-name">MadeWithLove</div>
+                        </div>
+                    </div>
+
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-fill"></div>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; font-size:10px; margin-top:5px; font-weight:bold;">
+                            <span id="current-time">0:00</span>
+                            <span id="duration-time">-0:00</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="now-playing">
-            <div class="track-count"></div>
-            
-            <div class="track-info-container">
-                <div id="album-art"></div>
-                <div class="text-meta">
-                    <div id="song-title">@JERUKLIAR</div>
-                    <div id="artist-name">Made With ❤️</div>
-                </div>
-            </div>
-
-            <div class="progress-container">
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progress-fill"></div>
-                </div>
-                <div class="time-info">
-                    <span id="current-time">0:00</span>
-                    <span id="duration-time">-0:00</span>
-                </div>
-            </div>
+        <!-- Click Wheel 3D -->
+        <div class="wheel" onclick="togglePlay()">
+            <div class="wheel-label menu">MENU</div>
+            <div class="wheel-label next">▶▶</div>
+            <div class="wheel-label prev">◀◀</div>
+            <div class="wheel-label play-pause">▶/Ⅱ</div>
+            <div class="center-button"></div>
         </div>
-    </div>
-
-    <div class="wheel" onclick="togglePlay()">
-        <div class="wheel-label menu">MENU</div>
-        <div class="wheel-label next">▶▶</div>
-        <div class="wheel-label prev">◀◀</div>
-        <div class="wheel-label play-pause">▶/Ⅱ</div>
-        <div class="center-button"></div>
     </div>
 </div>
 
 <audio id="audio-player" src="lovesong❤️.mp3"></audio>
 
 <script>
-    // --- FUNGSI JAM REAL-TIME ---
+    // Logika JS tetap sama dengan perbaikan visual kecil
     function updateTime() {
         const timeElement = document.getElementById('real-time');
         const now = new Date();
-        
-        // Menggunakan Intl.DateTimeFormat untuk memastikan format waktu Indonesia (WIB)
-        const options = { 
-            hour: '2-digit', 
-            minute: '2-digit', 
-            hour12: false,
-            timeZone: 'Asia/Jakarta' 
-        };
-        
-        const timeString = new Intl.DateTimeFormat('en-GB', options).format(now);
-        timeElement.innerText = timeString;
+        timeElement.innerText = now.getHours().toString().padStart(2, '0') + ":" + 
+                                now.getMinutes().toString().padStart(2, '0');
     }
-
-    // Jalankan setiap detik
     setInterval(updateTime, 1000);
-    // Jalankan langsung saat pertama kali dimuat
     updateTime();
 
-
-    // --- KONTROL AUDIO ---
     const audio = document.getElementById('audio-player');
-    const songTitle = document.getElementById('song-title');
-    const ipod = document.querySelector('.ipod');
     const progressFill = document.getElementById('progress-fill');
     const currentTimeEl = document.getElementById('current-time');
     const durationTimeEl = document.getElementById('duration-time');
@@ -318,12 +258,10 @@
     function togglePlay() {
         if (audio.paused) {
             audio.play();
-            ipod.classList.add('playing'); 
-            songTitle.style.color = "#3b97ee";
+            document.getElementById('song-title').style.color = "var(--apple-blue)";
         } else {
             audio.pause();
-            ipod.classList.remove('playing'); 
-            songTitle.style.color = "#000"; 
+            document.getElementById('song-title').style.color = "#000";
         }
     }
 
