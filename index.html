@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Retro Apple MP3 Player</title>
+    <title>Retro Apple MP3 Player - Classic LCD Edition</title>
     <style>
         :root {
             --ipod-bg: #e0e0e0;
-            --screen-bg: #1a1a1a;
-            --apple-blue: #007aff;
+            --screen-bg: #d1d1e0; /* Warna LCD Klasik sesuai image_66619c.png */
+            --apple-blue: #3b97ee;
         }
 
         body {
@@ -17,7 +17,7 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #f5f5f7;
+            background-color: #1a1a1a; 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
@@ -25,83 +25,177 @@
         .ipod {
             width: 300px;
             height: 520px;
-            background: var(--ipod-bg);
+            background: linear-gradient(145deg, #f0f0f0, #c8c8c8);
             border-radius: 40px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.2), inset 0 -5px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5), inset 0 2px 5px white;
             padding: 25px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            border: 1px solid #ccc;
+            border: 1px solid #aaa;
+            transition: transform 0.3s ease;
         }
 
-        /* Layar */
+        /* Layar LCD Klasik (Berdasarkan image_66619c.png) */
         .screen {
             width: 100%;
             height: 230px;
             background: var(--screen-bg);
-            border-radius: 10px;
+            border-radius: 4px;
             margin-bottom: 25px;
             overflow: hidden;
-            color: white;
+            color: #333; /* Teks gelap khas LCD */
             display: flex;
             flex-direction: column;
-            border: 4px solid #333;
+            border: 4px solid #222;
+            position: relative; 
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
         }
 
+        .screen::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 50%);
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        /* Header Layar (Jam & Baterai) */
         .screen-header {
-            padding: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 8px;
             font-size: 11px;
-            text-align: center;
-            border-bottom: 1px solid #333;
-            background: #222;
-            letter-spacing: 1px;
+            font-weight: bold;
+            background: linear-gradient(to bottom, #f5f5f5, #b8b8c8);
+            border-bottom: 1px solid #888;
+            color: #444;
         }
 
+        .battery {
+            width: 18px;
+            height: 8px;
+            border: 1px solid #555;
+            position: relative;
+            background: white;
+        }
+        .battery::after {
+            content: '';
+            width: 12px;
+            height: 6px;
+            background: #4caf50;
+            position: absolute;
+            left: 1px; top: 1px;
+        }
+
+        /* Konten Utama (Side-by-Side) */
         .now-playing {
             flex: 1;
-            padding: 10px;
+            padding: 15px 10px 5px 10px;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
+            z-index: 2;
         }
 
-        /* Gambar Album (Menggunakan icemode.jpg) */
+        .track-count {
+            font-size: 11px;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        .track-info-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
         #album-art {
-            width: 110px;
-            height: 110px;
-            background-color: #333;
-            border-radius: 4px;
-            margin-bottom: 12px;
-            object-fit: cover;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            width: 90px;
+            height: 90px;
+            background-color: #fff;
+            border: 1px solid #777;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
             background-image: url('icemode.jpg');
             background-size: cover;
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        #song-title { font-weight: bold; font-size: 14px; margin-bottom: 3px; color: var(--apple-blue); }
-        #artist-name { font-size: 12px; opacity: 0.7; }
+        .playing #album-art {
+            transform: scale(1.05);
+        }
+
+        .text-meta {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            overflow: hidden;
+        }
+
+        #song-title { 
+            font-weight: 800; 
+            font-size: 14px; 
+            color: #000;
+            margin-bottom: 2px;
+            letter-spacing: -0.3px;
+            transition: all 0.3s ease;
+        }
+
+        #artist-name { font-size: 12px; color: #444; opacity: 0.9; margin: 0; }
+        .album-name { font-size: 12px; color: #555; margin-top: 2px; }
+
+        /* Progress Bar (Berdasarkan image_66619c.png) */
+        .progress-container {
+            margin-top: auto;
+            padding-bottom: 8px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: #e0e0f0;
+            border: 1px solid #999;
+            border-radius: 2px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            width: 0%; 
+            height: 100%;
+            background: linear-gradient(to bottom, #87ceeb, #3b97ee);
+        }
+
+        .time-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            font-weight: bold;
+            margin-top: 4px;
+            color: #333;
+        }
 
         /* Click Wheel */
         .wheel {
             width: 180px;
             height: 180px;
-            background: white;
+            background: radial-gradient(circle, #ffffff 0%, #f0f0f0 100%);
             border-radius: 50%;
             position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1), inset 0 2px 5px white;
             cursor: pointer;
         }
 
         .center-button {
             width: 65px;
             height: 65px;
-            background: #eee;
+            background: #f8f8f8;
             border-radius: 50%;
             border: 1px solid #ddd;
             z-index: 10;
@@ -113,7 +207,7 @@
         .wheel-label {
             position: absolute;
             font-weight: bold;
-            color: #777;
+            color: #bbb;
             font-size: 11px;
             user-select: none;
         }
@@ -130,16 +224,36 @@
 
 <div class="ipod">
     <div class="screen">
-        <div class="screen-header">iPod Classic</div>
+        <div class="screen-header">
+            <span>▶Ⅱ</span>
+            <span>16:01</span>
+            <div class="battery"></div>
+        </div>
+
         <div class="now-playing">
-            <div id="album-art"></div>
-            <!-- Ganti teks di bawah ini sesuai lagu Anda -->
-            <div id="song-title">@JERUKLIAR</div>
-            <div id="artist-name">Made With ❤️ </div>
+            <div class="track-count">4 of 15</div>
+            
+            <div class="track-info-container">
+                <div id="album-art"></div>
+                <div class="text-meta">
+                    <div id="song-title">@JERUKLIAR</div>
+                    <div id="artist-name">Made With ❤️</div>
+                    <div class="album-name">Retro Edition</div>
+                </div>
+            </div>
+
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <div class="time-info">
+                    <span id="current-time">0:00</span>
+                    <span id="duration-time">-0:00</span>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Seluruh roda (wheel) bisa diklik untuk play/pause -->
     <div class="wheel" onclick="togglePlay()">
         <div class="wheel-label menu">MENU</div>
         <div class="wheel-label next">▶▶</div>
@@ -149,22 +263,50 @@
     </div>
 </div>
 
-<!-- Ganti src="lovesong❤️.mp3" dengan nama file lagu Anda di GitHub -->
 <audio id="audio-player" src="lovesong❤️.mp3"></audio>
 
 <script>
     const audio = document.getElementById('audio-player');
     const songTitle = document.getElementById('song-title');
+    const ipod = document.querySelector('.ipod');
+    const progressFill = document.getElementById('progress-fill');
+    const currentTimeEl = document.getElementById('current-time');
+    const durationTimeEl = document.getElementById('duration-time');
 
     function togglePlay() {
         if (audio.paused) {
             audio.play();
-            songTitle.style.color = "#007aff"; // Warna biru saat main
+            ipod.classList.add('playing'); 
+            songTitle.style.color = "#3b97ee"; // Warna biru sesuai progress bar saat main
         } else {
             audio.pause();
-            songTitle.style.color = "white"; // Warna putih saat pause
+            ipod.classList.remove('playing'); 
+            songTitle.style.color = "#000"; 
         }
     }
+
+    // Fungsi format waktu (0:00)
+    function formatTime(seconds) {
+        let mins = Math.floor(seconds / 60);
+        let secs = Math.floor(seconds % 60);
+        return mins + ":" + (secs < 10 ? '0' : '') + secs;
+    }
+
+    // Update Progress Bar & Waktu
+    audio.ontimeupdate = function() {
+        if (audio.duration) {
+            const percentage = (audio.currentTime / audio.duration) * 100;
+            progressFill.style.width = percentage + "%";
+            
+            currentTimeEl.innerText = formatTime(audio.currentTime);
+            durationTimeEl.innerText = "-" + formatTime(audio.duration - audio.currentTime);
+        }
+    };
+
+    // Load duration awal
+    audio.onloadedmetadata = function() {
+        durationTimeEl.innerText = "-" + formatTime(audio.duration);
+    };
 </script>
 
 </body>
