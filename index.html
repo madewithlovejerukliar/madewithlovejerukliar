@@ -1,161 +1,1339 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Retro Apple MP3 Player - GitHub Edition</title>
-    <style>
-        :root {
-            --body-grad: linear-gradient(135deg, #ffffff 0%, #e0e0e0 50%, #b8b8b8 100%);
-            --screen-bg: #cbd3d6;
-            --apple-blue: #3b97ee;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iPod Classic</title>
+<link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600&family=Chicago:wght@400&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     MUSIC LIBRARY — EDIT THIS SECTION TO CHANGE SONGS & ALBUMS
+     ============================================================ */
+  /* See the JS section below marked with the same comment */
 
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background: radial-gradient(circle, #333 0%, #111 100%);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        .container-3d { perspective: 1000px; }
+  :root {
+    --body-light: #f0eeeb;
+    --body-mid: #dddbd7;
+    --body-dark: #c8c5c0;
+    --body-shadow: #b0ada8;
+    --chrome: #e8e6e2;
+    --chrome-dark: #a8a5a0;
+    --screen-bg: #1a1a2e;
+    --screen-bezel: #2a2825;
+    --wheel-light: #e2e0dc;
+    --wheel-dark: #c5c2bc;
+    --wheel-center: #d8d5d0;
+    --btn-text: #5a5755;
+    --accent-blue: #4a7fd4;
+    --font-main: -apple-system, 'Helvetica Neue', Helvetica, sans-serif;
+  }
 
-        .ipod {
-            width: 320px;
-            height: 540px;
-            background: var(--body-grad);
-            border-radius: 45px;
-            padding: 30px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
-            box-shadow: 20px 20px 60px rgba(0,0,0,0.8), inset 0 2px 3px rgba(255,255,255,0.8);
-            border: 1px solid #999;
-            transform: rotateX(5deg) rotateY(-5deg);
-        }
+  html, body {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    background: radial-gradient(ellipse at 40% 30%, #2a2a2a 0%, #111 50%, #050505 100%);
+    min-height: 100vh;
+    overflow: hidden;
+    font-family: var(--font-main);
+  }
 
-        .screen-bezel {
-            width: 100%;
-            height: 240px;
-            background: #222;
-            padding: 6px;
-            border-radius: 12px;
-            box-shadow: inset 0 4px 10px rgba(0,0,0,0.5);
-            margin-bottom: 35px;
-        }
+  /* ---- DEVICE SHELL ---- */
+  .ipod-shell {
+    position: relative;
+    width: 222px;
+    height: 400px;
+    border-radius: 26px;
+    background: linear-gradient(160deg,
+      #f7f5f2 0%,
+      #edeae5 18%,
+      #e2dfd9 35%,
+      #d8d5cf 60%,
+      #ccc9c3 80%,
+      #bfbcb5 100%
+    );
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.9) inset,
+      0 2px 0 0 rgba(255,255,255,0.95) inset,
+      2px 0 0 0 rgba(255,255,255,0.6) inset,
+      -1px 0 0 0 rgba(0,0,0,0.08) inset,
+      0 -1px 0 0 rgba(0,0,0,0.12) inset,
+      0 25px 60px rgba(0,0,0,0.7),
+      0 10px 25px rgba(0,0,0,0.5),
+      0 4px 8px rgba(0,0,0,0.4),
+      4px 0 12px rgba(0,0,0,0.2),
+      -4px 0 12px rgba(0,0,0,0.15),
+      0 0 80px rgba(255,255,255,0.04);
+    filter: drop-shadow(0 35px 50px rgba(0,0,0,0.6));
+  }
 
-        .screen {
-            width: 100%;
-            height: 100%;
-            background: var(--screen-bg);
-            border-radius: 6px;
-            overflow: hidden;
-            color: #333;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
+  /* Side edge highlights */
+  .ipod-shell::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 26px;
+    background: linear-gradient(90deg,
+      rgba(255,255,255,0.45) 0%,
+      transparent 12%,
+      transparent 88%,
+      rgba(0,0,0,0.08) 100%
+    );
+    pointer-events: none;
+    z-index: 10;
+  }
 
-        .screen-header {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 15px;
-            background: linear-gradient(to bottom, #f9f9f9, #a0a0a8);
-            border-bottom: 1px solid #777;
-        }
+  /* Top specular shine */
+  .ipod-shell::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 10%; right: 10%;
+    height: 55%;
+    border-radius: 26px 26px 50% 50%;
+    background: linear-gradient(180deg,
+      rgba(255,255,255,0.55) 0%,
+      rgba(255,255,255,0.12) 40%,
+      transparent 100%
+    );
+    pointer-events: none;
+    z-index: 10;
+  }
 
-        .now-playing { flex: 1; padding: 20px; display: flex; flex-direction: column; }
+  /* ---- TOP HARDWARE ---- */
+  .top-hardware {
+    position: absolute;
+    top: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 180px;
+    height: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 20;
+    padding: 0 18px;
+  }
 
-        .track-info-container { display: flex; gap: 15px; align-items: center; }
+  /* Hold switch */
+  .hold-switch {
+    width: 22px;
+    height: 5px;
+    border-radius: 3px;
+    background: linear-gradient(180deg, #888 0%, #555 50%, #777 100%);
+    box-shadow:
+      0 1px 2px rgba(0,0,0,0.6),
+      0 0 0 1px rgba(0,0,0,0.3),
+      inset 0 1px 0 rgba(255,255,255,0.3);
+    position: relative;
+    overflow: hidden;
+  }
+  .hold-switch::after {
+    content: '';
+    position: absolute;
+    left: 3px; top: 1px;
+    width: 8px; height: 3px;
+    border-radius: 2px;
+    background: linear-gradient(180deg, #f90 0%, #c60 100%);
+    box-shadow: 0 0 3px rgba(255,150,0,0.6);
+  }
 
-        /* BAGIAN ATUR GAMBAR GITHUB */
-        #album-art {
-            width: 100px;
-            height: 100px;
-            background-color: #fff;
-            border: 1px solid #888;
-            box-shadow: 3px 3px 8px rgba(0,0,0,0.2);
-            
-            /* GANTI INI: Jika file jpg ada di folder yang sama dengan html */
-            background-image: url('folder_gambar/foto_kamu.jpg'); 
-            
-            background-size: cover;
-            background-position: center;
-        }
+  /* Headphone jack */
+  .headphone-jack {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 35%, #333 0%, #111 40%, #000 100%);
+    box-shadow:
+      0 0 0 2px #888,
+      0 0 0 3px #555,
+      inset 0 2px 4px rgba(0,0,0,0.9),
+      0 2px 4px rgba(0,0,0,0.5);
+    position: relative;
+    top: 1px;
+  }
+  .headphone-jack::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: #000;
+    box-shadow: inset 0 1px 2px rgba(255,255,255,0.1);
+  }
 
-        .text-meta #song-title { font-weight: 900; font-size: 15px; }
-        .text-meta #artist-name { font-size: 13px; color: #555; }
+  /* ---- SCREEN AREA ---- */
+  .screen-housing {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 182px;
+    height: 148px;
+    border-radius: 10px;
+    background: linear-gradient(145deg, #1c1a18 0%, #0d0c0b 100%);
+    box-shadow:
+      0 0 0 1px rgba(0,0,0,0.9),
+      0 0 0 2px rgba(255,255,255,0.08),
+      inset 0 0 0 1px rgba(0,0,0,0.8),
+      inset 2px 2px 6px rgba(0,0,0,0.6),
+      0 4px 12px rgba(0,0,0,0.5);
+    z-index: 5;
+    overflow: hidden;
+  }
 
-        .progress-bar {
-            height: 14px;
-            background: #eee;
-            border: 1px solid #999;
-            border-radius: 3px;
-            margin-top: auto;
-            overflow: hidden;
-        }
-        .progress-fill { width: 45%; height: 100%; background: linear-gradient(to bottom, #5cb8ff, #0076d1); }
+  /* Screen glass reflection */
+  .screen-housing::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 9px;
+    background: linear-gradient(135deg,
+      rgba(255,255,255,0.18) 0%,
+      rgba(255,255,255,0.06) 30%,
+      transparent 60%
+    );
+    z-index: 30;
+    pointer-events: none;
+  }
 
-        .wheel {
-            width: 190px;
-            height: 190px;
-            background: #fff;
-            border-radius: 50%;
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2), inset 0 -5px 10px rgba(0,0,0,0.1);
-            border: 1px solid #ccc;
-        }
+  .screen {
+    position: absolute;
+    top: 6px; left: 6px; right: 6px; bottom: 6px;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #000;
+  }
 
-        .center-button {
-            width: 70px;
-            height: 70px;
-            background: #e6e6e6;
-            border-radius: 50%;
-            border: 1px solid #d1d1d1;
-        }
-    </style>
+  /* ---- LCD DISPLAY ---- */
+  .lcd {
+    width: 100%; height: 100%;
+    background: linear-gradient(180deg, #b8cfe8 0%, #a8c0dc 100%);
+    position: relative;
+    font-size: 10px;
+    overflow: hidden;
+  }
+
+  .lcd-scanlines {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 1px,
+      rgba(0,0,0,0.04) 1px,
+      rgba(0,0,0,0.04) 2px
+    );
+    pointer-events: none;
+    z-index: 50;
+  }
+
+  /* Title bar */
+  .lcd-titlebar {
+    height: 18px;
+    background: linear-gradient(180deg, #6b8fc7 0%, #5a7db8 100%);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 6px;
+    border-bottom: 1px solid #4a6da8;
+  }
+
+  .lcd-title {
+    font-size: 10px;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    letter-spacing: 0.3px;
+    font-family: var(--font-main);
+  }
+
+  /* Battery indicator */
+  .battery-icon {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+  .battery-body {
+    width: 18px; height: 9px;
+    border: 1.5px solid rgba(255,255,255,0.8);
+    border-radius: 2px;
+    position: relative;
+    overflow: hidden;
+  }
+  .battery-body::after {
+    content: '';
+    position: absolute;
+    inset: 1.5px;
+    right: 25%;
+    background: #4cd964;
+    border-radius: 1px;
+  }
+  .battery-tip {
+    width: 2px; height: 5px;
+    background: rgba(255,255,255,0.8);
+    border-radius: 0 1px 1px 0;
+  }
+
+  /* Song list */
+  .lcd-list { overflow: hidden; height: calc(100% - 18px); }
+
+  .lcd-row {
+    display: flex;
+    align-items: center;
+    height: 34px;
+    padding: 0 5px;
+    border-bottom: 1px solid rgba(100,120,160,0.3);
+    cursor: pointer;
+    transition: background 0.1s;
+    position: relative;
+  }
+  .lcd-row.selected {
+    background: linear-gradient(180deg, #4a80d4 0%, #3568b8 100%);
+  }
+  .lcd-row.selected .song-title,
+  .lcd-row.selected .song-artist,
+  .lcd-row.selected .song-duration {
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+  }
+
+  .lcd-cover {
+    width: 26px; height: 26px;
+    border-radius: 3px;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #667 0%, #334 100%);
+    overflow: hidden;
+    box-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+  }
+  .lcd-cover img { width: 100%; height: 100%; object-fit: cover; }
+  .lcd-cover-placeholder {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #445 0%, #223 100%);
+    font-size: 8px; color: rgba(255,255,255,0.4);
+  }
+
+  .song-info { flex: 1; padding: 0 5px; overflow: hidden; }
+  .song-title {
+    font-size: 9.5px;
+    font-weight: 700;
+    color: #1a2840;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+    font-family: var(--font-main);
+  }
+  .song-artist {
+    font-size: 8px;
+    color: #3a5070;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.3;
+    font-family: var(--font-main);
+  }
+  .song-duration {
+    font-size: 9px;
+    color: #3a5070;
+    font-weight: 500;
+    flex-shrink: 0;
+    font-family: var(--font-main);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Now Playing Screen */
+  .now-playing-screen {
+    display: none;
+    flex-direction: column;
+    height: 100%;
+    background: linear-gradient(180deg, #b8cfe8 0%, #a0b8d4 100%);
+    position: absolute;
+    inset: 0;
+    z-index: 20;
+  }
+  .now-playing-screen.visible { display: flex; }
+
+  .np-titlebar {
+    height: 18px;
+    background: linear-gradient(180deg, #6b8fc7 0%, #5a7db8 100%);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 6px;
+    border-bottom: 1px solid #4a6da8;
+    flex-shrink: 0;
+  }
+  .np-title {
+    font-size: 10px; font-weight: 700;
+    color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    font-family: var(--font-main);
+  }
+
+  .np-album-art {
+    width: 80px; height: 80px;
+    border-radius: 5px;
+    margin: 8px auto 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.3);
+    overflow: hidden;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .np-album-art img { width: 100%; height: 100%; object-fit: cover; }
+  .np-album-placeholder {
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, #334 0%, #112 100%);
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .np-info { padding: 0 8px; text-align: center; flex-shrink: 0; }
+  .np-song-title {
+    font-size: 10px; font-weight: 700;
+    color: #1a2840; line-height: 1.2;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    font-family: var(--font-main);
+  }
+  .np-song-artist {
+    font-size: 8.5px; color: #3a5070;
+    line-height: 1.3; font-family: var(--font-main);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+
+  .np-progress-area { padding: 4px 8px 2px; flex-shrink: 0; }
+  .np-progress-bar {
+    width: 100%; height: 4px;
+    background: rgba(100,130,180,0.4);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 3px;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
+  }
+  .np-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #3568b8, #4a80d4);
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.5s linear;
+  }
+  .np-times {
+    display: flex; justify-content: space-between;
+    font-size: 8px; color: #3a5070;
+    font-family: var(--font-main);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* EQ bars */
+  .np-eq {
+    display: flex; align-items: flex-end; justify-content: center;
+    gap: 2px; height: 18px; padding: 0 8px;
+    flex-shrink: 0; margin-top: 2px;
+  }
+  .eq-bar {
+    width: 4px; border-radius: 1px 1px 0 0;
+    background: linear-gradient(180deg, #4a80d4 0%, #3568b8 100%);
+    animation: eqAnim 0.6s ease-in-out infinite alternate;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .eq-bar.active { opacity: 1; }
+  .eq-bar:nth-child(1) { animation-delay: 0s; }
+  .eq-bar:nth-child(2) { animation-delay: 0.1s; }
+  .eq-bar:nth-child(3) { animation-delay: 0.05s; }
+  .eq-bar:nth-child(4) { animation-delay: 0.15s; }
+  .eq-bar:nth-child(5) { animation-delay: 0.08s; }
+  .eq-bar:nth-child(6) { animation-delay: 0.12s; }
+  .eq-bar:nth-child(7) { animation-delay: 0.03s; }
+
+  @keyframes eqAnim {
+    from { height: 3px; }
+    to { height: 14px; }
+  }
+
+  /* ---- DIVIDER BETWEEN SCREEN & WHEEL ---- */
+  .mid-section {
+    position: absolute;
+    top: 168px;
+    left: 0; right: 0;
+    height: 22px;
+    z-index: 4;
+    overflow: hidden;
+  }
+
+  /* Subtle groove / surface detail instead of brand text */
+  .mid-groove {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60px;
+    height: 3px;
+    border-radius: 2px;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(0,0,0,0.08) 20%,
+      rgba(0,0,0,0.12) 50%,
+      rgba(0,0,0,0.08) 80%,
+      transparent 100%
+    );
+    box-shadow: 0 1px 0 rgba(255,255,255,0.5);
+  }
+
+  /* ---- CLICK WHEEL HOUSING ---- */
+  .wheel-housing {
+    position: absolute;
+    top: 183px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 172px;
+    height: 172px;
+    border-radius: 50%;
+    z-index: 5;
+    background: linear-gradient(145deg, #e8e5e0 0%, #d5d2cc 40%, #c8c5bf 100%);
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.7) inset,
+      0 -3px 6px rgba(0,0,0,0.1) inset,
+      3px 3px 8px rgba(0,0,0,0.15) inset,
+      0 8px 24px rgba(0,0,0,0.35),
+      0 3px 8px rgba(0,0,0,0.2),
+      0 1px 3px rgba(0,0,0,0.15);
+  }
+
+  /* Wheel outer ring top highlight */
+  .wheel-housing::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: conic-gradient(
+      from 270deg,
+      rgba(255,255,255,0.6) 0deg,
+      rgba(255,255,255,0.1) 80deg,
+      transparent 160deg,
+      rgba(0,0,0,0.08) 240deg,
+      rgba(255,255,255,0.2) 320deg,
+      rgba(255,255,255,0.6) 360deg
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* ---- CLICK WHEEL ---- */
+  .click-wheel {
+    position: absolute;
+    inset: 8px;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at 40% 30%,
+      #e8e5e0 0%,
+      #dedad4 30%,
+      #d0cdc7 60%,
+      #c5c2bc 100%
+    );
+    box-shadow:
+      0 0 0 1.5px rgba(255,255,255,0.8) inset,
+      0 2px 4px rgba(255,255,255,0.6) inset,
+      0 -2px 8px rgba(0,0,0,0.12) inset,
+      2px 2px 6px rgba(0,0,0,0.08) inset;
+    cursor: pointer;
+    user-select: none;
+    z-index: 2;
+  }
+
+  /* Wheel zone hit areas */
+  .wheel-zone {
+    position: absolute;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 3;
+    transition: all 0.08s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .wheel-zone-menu {
+    top: 10px; left: 50%;
+    transform: translateX(-50%);
+    width: 60px; height: 30px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .wheel-zone-back {
+    bottom: 10px; left: 50%;
+    transform: translateX(-50%);
+    width: 60px; height: 30px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .wheel-zone-prev {
+    left: 10px; top: 50%;
+    transform: translateY(-50%);
+    width: 30px; height: 60px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .wheel-zone-next {
+    right: 10px; top: 50%;
+    transform: translateY(-50%);
+    width: 30px; height: 60px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  /* Button label text */
+  .wheel-label {
+    font-size: 7.5px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    color: rgba(70,66,60,0.75);
+    text-shadow: 0 1px 0 rgba(255,255,255,0.6);
+    font-family: var(--font-main);
+    pointer-events: none;
+    text-transform: uppercase;
+  }
+
+  /* Skip icons (SVG-style text) */
+  .skip-icon {
+    display: flex; align-items: center; gap: 1px;
+    pointer-events: none;
+  }
+  .skip-triangle {
+    width: 0; height: 0;
+    border-style: solid;
+  }
+  .skip-prev .skip-triangle {
+    border-width: 4px 5px 4px 0;
+    border-color: transparent rgba(70,66,60,0.7) transparent transparent;
+  }
+  .skip-next .skip-triangle {
+    border-width: 4px 0 4px 5px;
+    border-color: transparent transparent transparent rgba(70,66,60,0.7);
+  }
+
+  /* Ripple flash on press */
+  .wheel-zone::after {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.5) 0%, transparent 70%);
+    opacity: 0;
+    transform: scale(0.5);
+    pointer-events: none;
+  }
+  .wheel-zone.pressed::after {
+    animation: wheelFlash 0.3s ease-out forwards;
+  }
+  @keyframes wheelFlash {
+    0% { opacity: 0.8; transform: scale(0.5); }
+    100% { opacity: 0; transform: scale(1.5); }
+  }
+  .wheel-zone.pressed { filter: brightness(0.92); }
+
+  /* ---- CENTER BUTTON ---- */
+  .center-btn {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at 40% 30%,
+      #f0eee9 0%,
+      #e2dfd9 40%,
+      #d2cfc8 80%,
+      #c5c2bb 100%
+    );
+    border: none;
+    cursor: pointer;
+    z-index: 10;
+    box-shadow:
+      0 0 0 1.5px rgba(255,255,255,0.9) inset,
+      0 2px 3px rgba(255,255,255,0.8) inset,
+      0 -2px 6px rgba(0,0,0,0.15) inset,
+      2px 2px 5px rgba(0,0,0,0.12) inset,
+      0 4px 12px rgba(0,0,0,0.3),
+      0 2px 6px rgba(0,0,0,0.2),
+      0 1px 2px rgba(0,0,0,0.15);
+    transition: transform 0.06s ease, box-shadow 0.06s ease, filter 0.06s ease;
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+  }
+
+  .center-btn::before {
+    content: '';
+    position: absolute;
+    top: 20%; left: 20%; right: 40%; bottom: 40%;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at 40% 30%,
+      rgba(255,255,255,0.7) 0%,
+      transparent 70%
+    );
+    pointer-events: none;
+  }
+
+  .center-btn:active,
+  .center-btn.pressed {
+    transform: translate(-50%, -50%) scale(0.92) translateY(1px);
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.6) inset,
+      0 1px 2px rgba(255,255,255,0.5) inset,
+      0 -1px 4px rgba(0,0,0,0.2) inset,
+      1px 1px 3px rgba(0,0,0,0.15) inset,
+      0 2px 6px rgba(0,0,0,0.25),
+      0 1px 3px rgba(0,0,0,0.15);
+    filter: brightness(0.93);
+  }
+
+  /* Ripple for center button */
+  .center-ripple {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.6);
+    pointer-events: none;
+    z-index: 11;
+    opacity: 0;
+  }
+  .center-ripple.animate {
+    animation: centerRipple 0.4s ease-out forwards;
+  }
+  @keyframes centerRipple {
+    0% { transform: translate(-50%,-50%) scale(0); opacity: 0.7; }
+    100% { transform: translate(-50%,-50%) scale(2.2); opacity: 0; }
+  }
+
+  /* ---- BOTTOM HARDWARE ---- */
+  .bottom-hardware {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 28px;
+    border-radius: 0 0 26px 26px;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 6;
+  }
+
+  /* Dock connector */
+  .dock-connector {
+    position: relative;
+    width: 54px;
+    height: 12px;
+    border-radius: 4px;
+    background: linear-gradient(180deg, #aaa 0%, #888 40%, #999 100%);
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.4),
+      0 -1px 0 rgba(0,0,0,0.3),
+      inset 0 1px 3px rgba(0,0,0,0.5),
+      inset 0 -1px 0 rgba(255,255,255,0.2),
+      0 2px 5px rgba(0,0,0,0.4);
+    overflow: hidden;
+  }
+  .dock-pins {
+    position: absolute;
+    inset: 2px 4px;
+    display: flex; gap: 1.5px; align-items: center;
+  }
+  .dock-pin {
+    flex: 1; height: 6px;
+    background: linear-gradient(180deg, #666 0%, #333 50%, #555 100%);
+    border-radius: 1px;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,0.5);
+  }
+
+  /* Speaker grilles */
+  .speaker-area {
+    position: absolute;
+    bottom: 6px;
+    display: flex; gap: 2.5px;
+    align-items: center;
+  }
+  .speaker-left { right: calc(50% + 34px); }
+  .speaker-right { left: calc(50% + 34px); }
+  .speaker-dot {
+    width: 3px; height: 3px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #777 0%, #444 100%);
+    box-shadow:
+      0 0 0 0.5px rgba(0,0,0,0.5),
+      inset 0 1px 1px rgba(0,0,0,0.6);
+  }
+
+  /* ---- SIDE BUTTONS (volume) ---- */
+  .side-btn {
+    position: absolute;
+    width: 5px;
+    border-radius: 3px 0 0 3px;
+    background: linear-gradient(90deg, #b8b5af 0%, #cac7c1 50%, #b0ada7 100%);
+    box-shadow:
+      -1px 0 0 rgba(255,255,255,0.5),
+      1px 0 0 rgba(0,0,0,0.15),
+      inset 0 1px 0 rgba(255,255,255,0.4),
+      inset 0 -1px 0 rgba(0,0,0,0.15),
+      -2px 1px 4px rgba(0,0,0,0.25);
+    cursor: pointer;
+    transition: all 0.06s ease;
+    z-index: 4;
+  }
+  .side-btn:active { transform: translateX(1px); filter: brightness(0.9); }
+  .side-btn-vol-up { top: 220px; height: 28px; left: -4px; border-radius: 0 3px 3px 0; }
+  .side-btn-vol-up::before {
+    content: '';
+    position: absolute;
+    bottom: 2px; left: 50%; transform: translateX(-50%);
+    width: 60%; height: 1px;
+    background: rgba(0,0,0,0.15);
+  }
+  .side-btn-vol-down { top: 256px; height: 28px; left: -4px; border-radius: 0 3px 3px 0; }
+
+  /* ---- DEVICE SURFACE TEXTURE ---- */
+  .surface-texture {
+    position: absolute;
+    inset: 0;
+    border-radius: 26px;
+    background-image:
+      url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+    pointer-events: none;
+    z-index: 9;
+    opacity: 0.4;
+    mix-blend-mode: multiply;
+  }
+
+  /* ---- AMBIENT GLOW ---- */
+  .ambient-glow {
+    position: fixed;
+    width: 400px; height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(ellipse,
+      rgba(200,200,195,0.08) 0%,
+      transparent 70%
+    );
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: -1;
+  }
+
+</style>
 </head>
 <body>
 
-<div class="container-3d">
-    <div class="ipod">
-        <div class="screen-bezel">
-            <div class="screen">
-                <div class="screen-header">
-                    <div style="font-size: 12px; font-weight: 800;">12:45</div>
-                    <div style="width: 20px; height: 10px; border: 1px solid #444;"></div>
-                </div>
+<div class="ambient-glow"></div>
 
-                <div class="now-playing">
-                    <div class="track-info-container">
-                        <!-- Gambar akan muncul di sini secara otomatis -->
-                        <div id="album-art"></div>
-                        <div class="text-meta">
-                            <div id="song-title">@JERUKLIAR</div>
-                            <div id="artist-name">GitHub Album</div>
-                        </div>
-                    </div>
+<div class="ipod-shell">
 
-                    <div class="progress-bar">
-                        <div class="progress-fill"></div>
-                    </div>
-                </div>
+  <!-- Surface texture -->
+  <div class="surface-texture"></div>
+
+  <!-- Top hardware: hold switch + headphone jack -->
+  <div class="top-hardware">
+    <div class="hold-switch"></div>
+    <div class="headphone-jack"></div>
+  </div>
+
+  <!-- Screen housing -->
+  <div class="screen-housing">
+    <div class="screen">
+
+      <!-- LCD content -->
+      <div class="lcd" id="lcd">
+        <div class="lcd-scanlines"></div>
+
+        <!-- Title bar -->
+        <div class="lcd-titlebar">
+          <span class="lcd-title" id="screen-title">Music</span>
+          <div class="battery-icon">
+            <div class="battery-body"></div>
+            <div class="battery-tip"></div>
+          </div>
+        </div>
+
+        <!-- Song list -->
+        <div class="lcd-list" id="song-list"></div>
+
+        <!-- Now Playing overlay -->
+        <div class="now-playing-screen" id="now-playing">
+          <div class="np-titlebar">
+            <span class="np-title">Now Playing</span>
+            <div class="battery-icon">
+              <div class="battery-body"></div>
+              <div class="battery-tip"></div>
             </div>
+          </div>
+          <div class="np-album-art" id="np-art">
+            <div class="np-album-placeholder" id="np-placeholder">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                <circle cx="16" cy="16" r="9" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+                <circle cx="16" cy="16" r="3" fill="rgba(255,255,255,0.3)"/>
+                <path d="M12 8L20 12L20 20L12 24Z" fill="rgba(255,255,255,0.2)"/>
+              </svg>
+            </div>
+            <img id="np-img" style="display:none;width:100%;height:100%;object-fit:cover;" alt="">
+          </div>
+          <div class="np-info">
+            <div class="np-song-title" id="np-song-title">No Track</div>
+            <div class="np-song-artist" id="np-song-artist">Unknown</div>
+          </div>
+          <div class="np-progress-area">
+            <div class="np-progress-bar">
+              <div class="np-progress-fill" id="np-progress"></div>
+            </div>
+            <div class="np-times">
+              <span id="np-elapsed">0:00</span>
+              <span id="np-remaining">0:00</span>
+            </div>
+          </div>
+          <div class="np-eq" id="np-eq">
+            <div class="eq-bar" style="height:4px"></div>
+            <div class="eq-bar" style="height:8px"></div>
+            <div class="eq-bar" style="height:6px"></div>
+            <div class="eq-bar" style="height:10px"></div>
+            <div class="eq-bar" style="height:5px"></div>
+            <div class="eq-bar" style="height:9px"></div>
+            <div class="eq-bar" style="height:7px"></div>
+          </div>
         </div>
 
-        <div class="wheel">
-            <div style="position: absolute; top: 20px; color: #999; font-weight: bold;">MENU</div>
-            <div class="center-button"></div>
+      </div><!-- /lcd -->
+    </div><!-- /screen -->
+  </div><!-- /screen-housing -->
+
+  <!-- Mid section — subtle groove detail, no brand text -->
+  <div class="mid-section">
+    <div class="mid-groove"></div>
+  </div>
+
+  <!-- Click Wheel housing -->
+  <div class="wheel-housing">
+    <div class="click-wheel">
+
+      <!-- MENU zone -->
+      <div class="wheel-zone wheel-zone-menu" id="btn-menu" onclick="handleWheel('menu',this)">
+        <span class="wheel-label">MENU</span>
+      </div>
+
+      <!-- BACK zone -->
+      <div class="wheel-zone wheel-zone-back" id="btn-back" onclick="handleWheel('back',this)">
+        <span class="wheel-label">BACK</span>
+      </div>
+
+      <!-- PREV zone -->
+      <div class="wheel-zone wheel-zone-prev" id="btn-prev" onclick="handleWheel('prev',this)">
+        <div class="skip-icon skip-prev">
+          <div class="skip-triangle"></div>
+          <div class="skip-triangle"></div>
         </div>
+      </div>
+
+      <!-- NEXT zone -->
+      <div class="wheel-zone wheel-zone-next" id="btn-next" onclick="handleWheel('next',this)">
+        <div class="skip-icon skip-next">
+          <div class="skip-triangle"></div>
+          <div class="skip-triangle"></div>
+        </div>
+      </div>
+
+      <!-- Center button -->
+      <button class="center-btn" id="center-btn" onclick="handleCenter(this)" aria-label="Select">
+        <div class="center-ripple" id="center-ripple"></div>
+      </button>
+
+    </div><!-- /click-wheel -->
+  </div><!-- /wheel-housing -->
+
+  <!-- Side volume buttons -->
+  <div class="side-btn side-btn-vol-up"></div>
+  <div class="side-btn side-btn-vol-down"></div>
+
+  <!-- Bottom hardware: dock connector + speaker grilles -->
+  <div class="bottom-hardware">
+    <div class="speaker-area speaker-left">
+      <div class="speaker-dot"></div>
+      <div class="speaker-dot"></div>
+      <div class="speaker-dot"></div>
     </div>
-</div>
+    <div class="dock-connector">
+      <div class="dock-pins" id="dock-pins"></div>
+    </div>
+    <div class="speaker-area speaker-right">
+      <div class="speaker-dot"></div>
+      <div class="speaker-dot"></div>
+      <div class="speaker-dot"></div>
+    </div>
+  </div>
 
+</div><!-- /ipod-shell -->
+
+<script>
+/* ================================================================
+   MUSIC LIBRARY — EDIT THIS SECTION TO CHANGE SONGS & ALBUMS
+   ----------------------------------------------------------------
+   Instructions:
+   - album     : Name of the album
+   - artist    : Artist name
+   - cover     : URL or relative path to album art (e.g. "./covers/album.jpg")
+                 Leave "" for default music icon
+   - songs     : Array of tracks, each with title and duration
+================================================================ */
+const LIBRARY = [
+  {
+    album: "After Hours",
+    artist: "The Weeknd",
+    cover: "https://upload.wikimedia.org/wikipedia/en/c/c1/The_Weeknd_-_After_Hours.png",
+    songs: [
+      { title: "Alone Again", duration: "4:10" },
+      { title: "Too Late", duration: "3:59" },
+      { title: "Hardest To Love", duration: "4:10" },
+      { title: "Scared To Live", duration: "3:12" },
+      { title: "Snowchild", duration: "5:01" },
+      { title: "Escape From LA", duration: "6:09" },
+      { title: "Until I Bleed Out", duration: "4:10" },
+      { title: "Repeat After Me", duration: "3:37" },
+      { title: "After Hours", duration: "6:01" },
+      { title: "Save Your Tears", duration: "3:36" },
+    ]
+  },
+  {
+    album: "Starboy",
+    artist: "The Weeknd",
+    cover: "https://upload.wikimedia.org/wikipedia/en/3/39/The_Weeknd_-_Starboy.png",
+    songs: [
+      { title: "Starboy", duration: "3:50" },
+      { title: "Party Monster", duration: "4:09" },
+      { title: "False Alarm", duration: "3:40" },
+      { title: "Reminder", duration: "3:38" },
+      { title: "Rockin", duration: "3:52" },
+      { title: "Secrets", duration: "5:25" },
+      { title: "True Colors", duration: "4:05" },
+      { title: "Sidewalks", duration: "3:28" },
+      { title: "A Lonely Night", duration: "3:30" },
+    ]
+  },
+  {
+    album: "Midnights",
+    artist: "Taylor Swift",
+    cover: "https://upload.wikimedia.org/wikipedia/en/9/9f/Midnights_-_Taylor_Swift.png",
+    songs: [
+      { title: "Lavender Haze", duration: "3:22" },
+      { title: "Maroon", duration: "3:38" },
+      { title: "Anti-Hero", duration: "3:20" },
+      { title: "Snow on the Beach", duration: "4:16" },
+      { title: "Midnight Rain", duration: "2:54" },
+      { title: "Question...?", duration: "3:30" },
+      { title: "Vigilante Shit", duration: "2:44" },
+      { title: "Bejeweled", duration: "3:15" },
+    ]
+  },
+];
+/* ================================================================ */
+
+// Build dock pins
+const dockPins = document.getElementById('dock-pins');
+for (let i = 0; i < 20; i++) {
+  const pin = document.createElement('div');
+  pin.className = 'dock-pin';
+  dockPins.appendChild(pin);
+}
+
+// State
+let currentSongIndex = 0;
+let isPlaying = false;
+let progressTimer = null;
+let elapsedSecs = 0;
+let totalSecs = 0;
+let scrollIndex = 0;
+const VISIBLE_ROWS = 4;
+
+// Flatten all songs with album info
+const allSongs = [];
+LIBRARY.forEach(album => {
+  album.songs.forEach(song => {
+    allSongs.push({
+      title: song.title,
+      duration: song.duration,
+      artist: album.artist,
+      album: album.album,
+      cover: album.cover
+    });
+  });
+});
+
+// Parse duration string to seconds
+function parseDuration(dur) {
+  const parts = dur.split(':');
+  return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+}
+
+// Format seconds to m:ss
+function formatTime(s) {
+  const m = Math.floor(s / 60);
+  const sec = Math.floor(s % 60);
+  return m + ':' + (sec < 10 ? '0' : '') + sec;
+}
+
+// Render song list
+function renderList() {
+  const list = document.getElementById('song-list');
+  list.innerHTML = '';
+  const visible = allSongs.slice(scrollIndex, scrollIndex + VISIBLE_ROWS);
+  visible.forEach((song, i) => {
+    const idx = scrollIndex + i;
+    const row = document.createElement('div');
+    row.className = 'lcd-row' + (idx === currentSongIndex ? ' selected' : '');
+    row.onclick = () => { currentSongIndex = idx; renderList(); loadSong(idx); };
+
+    // Cover art
+    const cover = document.createElement('div');
+    cover.className = 'lcd-cover';
+    if (song.cover) {
+      const img = document.createElement('img');
+      img.src = song.cover;
+      img.alt = '';
+      cover.appendChild(img);
+    } else {
+      const ph = document.createElement('div');
+      ph.className = 'lcd-cover-placeholder';
+      ph.innerHTML = '<svg width="10" height="10" viewBox="0 0 10 10" fill="rgba(255,255,255,0.3)"><circle cx="5" cy="5" r="4" stroke="rgba(255,255,255,0.3)" stroke-width="1" fill="none"/><circle cx="5" cy="5" r="1.5" fill="rgba(255,255,255,0.3)"/></svg>';
+      cover.appendChild(ph);
+    }
+
+    const info = document.createElement('div');
+    info.className = 'song-info';
+    const title = document.createElement('div');
+    title.className = 'song-title';
+    title.textContent = song.title;
+    const artist = document.createElement('div');
+    artist.className = 'song-artist';
+    artist.textContent = song.artist + ' - ' + song.album;
+    info.appendChild(title);
+    info.appendChild(artist);
+
+    const dur = document.createElement('div');
+    dur.className = 'song-duration';
+    dur.textContent = song.duration;
+
+    row.appendChild(cover);
+    row.appendChild(info);
+    row.appendChild(dur);
+    list.appendChild(row);
+  });
+}
+
+// Load a song into now playing
+function loadSong(idx) {
+  const song = allSongs[idx];
+  if (!song) return;
+  document.getElementById('np-song-title').textContent = song.title;
+  document.getElementById('np-song-artist').textContent = song.artist + ' - ' + song.album;
+
+  const npImg = document.getElementById('np-img');
+  const npPh = document.getElementById('np-placeholder');
+  if (song.cover) {
+    npImg.src = song.cover;
+    npImg.style.display = 'block';
+    npPh.style.display = 'none';
+  } else {
+    npImg.style.display = 'none';
+    npPh.style.display = 'flex';
+  }
+
+  totalSecs = parseDuration(song.duration);
+  elapsedSecs = 0;
+  document.getElementById('np-progress').style.width = '0%';
+  document.getElementById('np-elapsed').textContent = '0:00';
+  document.getElementById('np-remaining').textContent = '-' + song.duration;
+  document.getElementById('np-remaining').textContent = formatTime(totalSecs);
+
+  showNowPlaying();
+  startPlay();
+}
+
+function showNowPlaying() {
+  document.getElementById('now-playing').classList.add('visible');
+  document.getElementById('screen-title').textContent = 'Now Playing';
+}
+
+function hideNowPlaying() {
+  document.getElementById('now-playing').classList.remove('visible');
+  document.getElementById('screen-title').textContent = 'Music';
+}
+
+function startPlay() {
+  clearInterval(progressTimer);
+  isPlaying = true;
+  setEQ(true);
+  progressTimer = setInterval(() => {
+    if (!isPlaying) return;
+    elapsedSecs++;
+    if (elapsedSecs >= totalSecs) {
+      elapsedSecs = totalSecs;
+      clearInterval(progressTimer);
+      isPlaying = false;
+      setEQ(false);
+      // Auto-advance
+      setTimeout(() => {
+        if (currentSongIndex < allSongs.length - 1) {
+          currentSongIndex++;
+          adjustScroll();
+          renderList();
+          loadSong(currentSongIndex);
+        }
+      }, 800);
+    }
+    const pct = (elapsedSecs / totalSecs) * 100;
+    document.getElementById('np-progress').style.width = pct + '%';
+    document.getElementById('np-elapsed').textContent = formatTime(elapsedSecs);
+    document.getElementById('np-remaining').textContent = formatTime(totalSecs - elapsedSecs);
+  }, 1000);
+}
+
+function pausePlay() {
+  isPlaying = false;
+  setEQ(false);
+  clearInterval(progressTimer);
+}
+
+function resumePlay() {
+  isPlaying = true;
+  setEQ(true);
+  startPlay();
+}
+
+function setEQ(on) {
+  document.querySelectorAll('.eq-bar').forEach(b => {
+    on ? b.classList.add('active') : b.classList.remove('active');
+  });
+}
+
+function adjustScroll() {
+  if (currentSongIndex < scrollIndex) scrollIndex = currentSongIndex;
+  if (currentSongIndex >= scrollIndex + VISIBLE_ROWS) scrollIndex = currentSongIndex - VISIBLE_ROWS + 1;
+  scrollIndex = Math.max(0, Math.min(scrollIndex, allSongs.length - VISIBLE_ROWS));
+}
+
+// Wheel press effect
+function triggerWheelEffect(el) {
+  el.classList.remove('pressed');
+  void el.offsetWidth;
+  el.classList.add('pressed');
+  setTimeout(() => el.classList.remove('pressed'), 300);
+}
+
+// Handle wheel buttons
+function handleWheel(action, el) {
+  triggerWheelEffect(el);
+  const nowPlayingVisible = document.getElementById('now-playing').classList.contains('visible');
+
+  if (action === 'menu' || action === 'back') {
+    if (nowPlayingVisible) {
+      pausePlay();
+      hideNowPlaying();
+      renderList();
+    }
+    return;
+  }
+
+  if (action === 'prev') {
+    if (nowPlayingVisible) {
+      if (elapsedSecs > 3) {
+        elapsedSecs = 0;
+        startPlay();
+      } else if (currentSongIndex > 0) {
+        currentSongIndex--;
+        adjustScroll();
+        renderList();
+        loadSong(currentSongIndex);
+      }
+    } else {
+      if (currentSongIndex > 0) {
+        currentSongIndex--;
+        adjustScroll();
+        renderList();
+      }
+    }
+    return;
+  }
+
+  if (action === 'next') {
+    if (nowPlayingVisible) {
+      if (currentSongIndex < allSongs.length - 1) {
+        currentSongIndex++;
+        adjustScroll();
+        renderList();
+        loadSong(currentSongIndex);
+      }
+    } else {
+      if (currentSongIndex < allSongs.length - 1) {
+        currentSongIndex++;
+        adjustScroll();
+        renderList();
+      }
+    }
+    return;
+  }
+}
+
+// Center button
+function handleCenter(el) {
+  // Ripple
+  const ripple = document.getElementById('center-ripple');
+  ripple.classList.remove('animate');
+  void ripple.offsetWidth;
+  ripple.classList.add('animate');
+
+  el.classList.add('pressed');
+  setTimeout(() => el.classList.remove('pressed'), 200);
+
+  const nowPlayingVisible = document.getElementById('now-playing').classList.contains('visible');
+  if (nowPlayingVisible) {
+    if (isPlaying) pausePlay();
+    else resumePlay();
+  } else {
+    loadSong(currentSongIndex);
+  }
+}
+
+// Scroll wheel with mouse wheel
+let wheelAccum = 0;
+document.querySelector('.wheel-housing').addEventListener('wheel', (e) => {
+  e.preventDefault();
+  wheelAccum += e.deltaY;
+  if (Math.abs(wheelAccum) > 60) {
+    const dir = wheelAccum > 0 ? 1 : -1;
+    wheelAccum = 0;
+    const nowPlayingVisible = document.getElementById('now-playing').classList.contains('visible');
+    if (!nowPlayingVisible) {
+      currentSongIndex = Math.max(0, Math.min(allSongs.length - 1, currentSongIndex + dir));
+      adjustScroll();
+      renderList();
+    }
+  }
+}, { passive: false });
+
+// Keyboard navigation
+document.addEventListener('keydown', (e) => {
+  const nowPlayingVisible = document.getElementById('now-playing').classList.contains('visible');
+  if (e.key === 'ArrowDown') {
+    if (!nowPlayingVisible) {
+      currentSongIndex = Math.min(allSongs.length - 1, currentSongIndex + 1);
+      adjustScroll(); renderList();
+    }
+  } else if (e.key === 'ArrowUp') {
+    if (!nowPlayingVisible) {
+      currentSongIndex = Math.max(0, currentSongIndex - 1);
+      adjustScroll(); renderList();
+    }
+  } else if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    handleCenter(document.getElementById('center-btn'));
+  } else if (e.key === 'Escape' || e.key === 'Backspace') {
+    if (nowPlayingVisible) { pausePlay(); hideNowPlaying(); renderList(); }
+  } else if (e.key === 'ArrowRight') {
+    handleWheel('next', document.getElementById('btn-next'));
+  } else if (e.key === 'ArrowLeft') {
+    handleWheel('prev', document.getElementById('btn-prev'));
+  }
+});
+
+// Init
+renderList();
+</script>
 </body>
 </html>
